@@ -61,13 +61,25 @@ schtasks /create /tn "FixVBS" /tr "C:\fix-vbs-boot.bat" /sc onlogon /ru SYSTEM /
 
 每次登录前自动以 SYSTEM 权限重新应用注册表/BCD 关闭项。
 
-## 回滚
+## 恢复 VBS（当你需要 VBS 时）
 
-```bat
-reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard" /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard" /v EnableVirtualizationBasedSecurity /t REG_DWORD /d 1 /f
-bcdedit /set hypervisorlaunchtype auto
-```
+运行 `enable-vbs.bat`（**以管理员身份运行**），它会：
+
+1. 删除开机自启任务（schtasks `FixVBS`、启动文件夹残留）
+2. 恢复注册表：`EnableVirtualizationBasedSecurity=1`、`WindowsHello=1`、`HVCI=1`、清除 opt-out 和策略键
+3. 恢复 BCD：`hypervisorlaunchtype auto`
+4. 清理 vbs-killer 创建的启动项和 SecConfig.efi
+
+之后**重启**即可让 VBS 重新运行。
+
+> 手动等效命令：
+> ```bat
+> reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard" /f
+> reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard" /v EnableVirtualizationBasedSecurity /t REG_DWORD /d 1 /f
+> reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\WindowsHello" /v Enabled /t REG_DWORD /d 1 /f
+> bcdedit /set hypervisorlaunchtype auto
+> ```
+> 若之前按 F3 写过 UEFI opt-out 变量，可能需要到 Windows 安全中心重新开启设备安全功能。
 
 ## 免责声明
 
