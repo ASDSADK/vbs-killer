@@ -2,7 +2,12 @@
 rem =====================================================
 rem VBS KILLER - run as admin once, then RESTART and
 rem HOLD F3 when the black/white text screen appears.
+rem Double-click OK: auto-elevates via UAC.
 rem =====================================================
+rem --- auto-elevate ---
+fltmc >nul 2>&1 || powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
+fltmc >nul 2>&1 || exit /b
+
 set LOG=%TEMP%\vbskiller-log.txt
 echo [start] > %LOG%
 

@@ -34,7 +34,7 @@ Windows 11 默认启用 **VBS（基于虚拟化的安全性）**，轻量级 hyp
 
 ## 使用方法
 
-1. 右键 `vbs-killer.bat` → **以管理员身份运行**
+1. **双击 `vbs-killer.bat`**（脚本会自动弹出 UAC 请求管理员权限，点"是"）
 2. **重启电脑**
 3. 过了 BIOS 自检、屏幕出现**黑白字符提示**时，**狂按 F3**，直到电脑自动重启
 4. 完成，CASS 不再报虚拟机
@@ -44,7 +44,7 @@ Windows 11 默认启用 **VBS（基于虚拟化的安全性）**，轻量级 hyp
 ## 验证
 
 ```bash
-python cpuid-check.py
+python cpuid-check.py    # 需 64 位 Python
 ```
 
 - `hypervisor present` 应为 `False`
@@ -63,7 +63,7 @@ schtasks /create /tn "FixVBS" /tr "C:\fix-vbs-boot.bat" /sc onlogon /ru SYSTEM /
 
 ## 恢复 VBS（当你需要 VBS 时）
 
-运行 `enable-vbs.bat`（**以管理员身份运行**），它会：
+双击 `enable-vbs.bat`（自动请求管理员权限），它会：
 
 1. 删除开机自启任务（schtasks `FixVBS`、启动文件夹残留）
 2. 恢复注册表：`EnableVirtualizationBasedSecurity=1`、`WindowsHello=1`、`HVCI=1`、清除 opt-out 和策略键

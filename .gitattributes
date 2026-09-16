@@ -1,0 +1,3 @@
+# .bat 以 CRLF 原样存储（-text 禁用行尾转换）
+# 确保从任何渠道下载（Release / raw / zip / clone）拿到的 bat 都能直接运行
+*.bat -text

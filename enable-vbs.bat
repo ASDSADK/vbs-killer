@@ -6,7 +6,11 @@ rem  Windows Hello enhanced sign-in / Hyper-V, etc.
 rem  1) removes boot-time auto-run of vbs-killer / fix-vbs-boot
 rem  2) restores registry + BCD so VBS can start again
 rem  3) RESTART after running
+rem  Double-click OK: auto-elevates via UAC.
 rem ============================================================
+rem --- auto-elevate ---
+fltmc >nul 2>&1 || powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
+fltmc >nul 2>&1 || exit /b
 
 echo [1/5] Removing boot auto-run tasks...
 schtasks /delete /tn "FixVBS" /f >nul 2>&1
