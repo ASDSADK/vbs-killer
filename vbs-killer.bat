@@ -3,7 +3,7 @@ rem =====================================================
 rem VBS KILLER - run as admin once, then RESTART and
 rem HOLD F3 when the black/white text screen appears.
 rem =====================================================
-set LOG=C:\Users\33487\AppData\Roaming\reasonix\global-workspace\vbskiller-log.txt
+set LOG=%TEMP%\vbskiller-log.txt
 echo [start] > %LOG%
 
 rem --- registry: disable all VBS sources ---
