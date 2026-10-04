@@ -61,6 +61,17 @@ schtasks /create /tn "FixVBS" /tr "C:\fix-vbs-boot.bat" /sc onlogon /ru SYSTEM /
 
 每次登录前自动以 SYSTEM 权限重新应用注册表/BCD 关闭项。
 
+## 停用开机自启（stop-vbs-killer.bat）
+
+如果你用上面的 `schtasks` 方式设置了开机自动收紧 VBS，现在想**让它不再自动运行**（同时不改动当前 VBS 开关状态）：
+
+- **双击 `stop-vbs-killer.bat`**（自动请求管理员权限），或
+- 运行 `vbs-killer.bat /stop`（效果相同）
+
+它会删除：计划任务 `FixVBS`、启动文件夹副本、`Run` 注册表项，以及一次性的 F3 启动项（bootsequence）。
+
+> 需要连 VBS 一起恢复开启，请用下面的 `enable-vbs.bat`。
+
 ## 恢复 VBS（当你需要 VBS 时）
 
 双击 `enable-vbs.bat`（自动请求管理员权限），它会：
