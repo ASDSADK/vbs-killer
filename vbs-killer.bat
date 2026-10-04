@@ -1,20 +1,14 @@
 @echo off
 rem =====================================================
-rem VBS KILLER - run as admin once, then RESTART and
-rem HOLD F3 when the black/white text screen appears.
+rem VBS KILLER - disable VBS (run once as admin).
 rem Double-click OK: auto-elevates via UAC.
-rem
-rem Usage:
-rem   vbs-killer.bat             kill VBS (default)
-rem   vbs-killer.bat /stop       disable boot auto-run only
-rem   vbs-killer.bat /uninstall  same as /stop
+rem Then RESTART and HOLD F3 when the black/white text
+rem screen appears. Effective permanently afterwards.
+rem To restore VBS later, run enable-vbs.bat.
 rem =====================================================
-rem --- auto-elevate (keeps arguments) ---
-fltmc >nul 2>&1 || powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -ArgumentList '%*' -Verb RunAs"
+rem --- auto-elevate ---
+fltmc >nul 2>&1 || powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
 fltmc >nul 2>&1 || exit /b
-
-if /i "%~1"=="/stop" goto STOPMODE
-if /i "%~1"=="/uninstall" goto STOPMODE
 
 set LOG=%TEMP%\vbskiller-log.txt
 echo [start] > %LOG%
@@ -47,8 +41,3 @@ echo.
 echo DONE. RESTART NOW and HOLD F3 when prompted!
 echo If you miss the F3 prompt, run this file again.
 pause
-exit /b
-
-:STOPMODE
-call "%~dp0stop-vbs-killer.bat"
-exit /b

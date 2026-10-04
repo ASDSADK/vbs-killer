@@ -1,18 +1,16 @@
 @echo off
 rem ============================================================
-rem  enable-vbs.bat - undo vbs-killer (run as ADMIN)
-rem  Use when you WANT VBS back: Core Isolation / WSL2 /
+rem  enable-vbs.bat - RESTORE VBS
+rem  Run when you NEED VBS back: Core Isolation / WSL2 /
 rem  Windows Hello enhanced sign-in / Hyper-V, etc.
-rem  1) removes boot-time auto-run of vbs-killer / fix-vbs-boot
-rem  2) restores registry + BCD so VBS can start again
-rem  3) RESTART after running
+rem  Restores registry + BCD so VBS starts again after reboot.
 rem  Double-click OK: auto-elevates via UAC.
 rem ============================================================
 rem --- auto-elevate ---
 fltmc >nul 2>&1 || powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
 fltmc >nul 2>&1 || exit /b
 
-echo [1/5] Removing boot auto-run tasks...
+echo [1/5] Cleaning up any leftover auto-run entries...
 schtasks /delete /tn "FixVBS" /f >nul 2>&1
 del "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\vbs-killer.bat" >nul 2>&1
 del "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\fix-vbs-boot.bat" >nul 2>&1

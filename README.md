@@ -2,6 +2,16 @@
 
 解决 CASS11 等软件在**物理机**上被误报"不要在虚拟机中运行"的问题。
 
+## 文件说明（只需两个脚本）
+
+| 文件 | 用途 |
+|---|---|
+| `vbs-killer.bat` | **关闭 VBS**（解决 CASS 误报），双击运行一次 |
+| `enable-vbs.bat` | **恢复 VBS**（需要内核隔离 / WSL2 / Hyper-V 等功能时），双击运行一次 |
+| `cpuid-check.py` | 验证工具（可选）：确认 hypervisor 是否已关闭 |
+
+无需开机自启、无需常驻后台：关闭设置是**持久的**，跑一次即可长期有效。
+
 ## 问题根因
 
 Windows 11 默认启用 **VBS（基于虚拟化的安全性）**，轻量级 hypervisor 随系统运行，CPUID 指令暴露 `Microsoft Hv` 特征。CASS 的授权检测把该特征误判为虚拟机环境，拒绝运行。
@@ -41,6 +51,8 @@ Windows 11 默认启用 **VBS（基于虚拟化的安全性）**，轻量级 hyp
 
 > ⚠️ F3 提示是**一次性**的（bootsequence），错过需重新运行脚本再重启。
 
+**跑一次即可长期有效**：关闭设置是持久化的（注册表 + 策略 + BCD + UEFI opt-out 四层），**不需要**每次开机运行任何脚本。只有两种情况需要重跑：① Windows **大版本更新**把它重置回来；② 你自己运行了 `enable-vbs.bat`。
+
 ## 验证
 
 ```bash
@@ -52,31 +64,11 @@ python cpuid-check.py    # 需 64 位 Python
 
 或查看事件日志：`eventvwr → Windows 日志 → 系统 → Kernel-Boot 事件 153`，应显示 `disabled due to opt-out UEFI variable`。
 
-## 保底方案（Windows 更新重置时）
-
-```bash
-copy fix-vbs-boot.bat C:\fix-vbs-boot.bat
-schtasks /create /tn "FixVBS" /tr "C:\fix-vbs-boot.bat" /sc onlogon /ru SYSTEM /rl HIGHEST /f
-```
-
-每次登录前自动以 SYSTEM 权限重新应用注册表/BCD 关闭项。
-
-## 停用开机自启（stop-vbs-killer.bat）
-
-如果你用上面的 `schtasks` 方式设置了开机自动收紧 VBS，现在想**让它不再自动运行**（同时不改动当前 VBS 开关状态）：
-
-- **双击 `stop-vbs-killer.bat`**（自动请求管理员权限），或
-- 运行 `vbs-killer.bat /stop`（效果相同）
-
-它会删除：计划任务 `FixVBS`、启动文件夹副本、`Run` 注册表项，以及一次性的 F3 启动项（bootsequence）。
-
-> 需要连 VBS 一起恢复开启，请用下面的 `enable-vbs.bat`。
-
 ## 恢复 VBS（当你需要 VBS 时）
 
 双击 `enable-vbs.bat`（自动请求管理员权限），它会：
 
-1. 删除开机自启任务（schtasks `FixVBS`、启动文件夹残留）
+1. 清理历史遗留的自启项（如果有）
 2. 恢复注册表：`EnableVirtualizationBasedSecurity=1`、`WindowsHello=1`、`HVCI=1`、清除 opt-out 和策略键
 3. 恢复 BCD：`hypervisorlaunchtype auto`
 4. 清理 vbs-killer 创建的启动项和 SecConfig.efi
